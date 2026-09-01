@@ -1,9 +1,9 @@
 # claude-redes-sociales
 
-Publica automaticamente en Instagram y Facebook usando material que subas a
-`content/queue/`. La caption la escribe Claude; no se genera imagen con IA,
-se usa el material real que subas (fotos/videos de las webs que hace la
-agencia, capturas, reels, etc.).
+Publica automaticamente en Instagram (Facebook queda para mas adelante) usando
+material que subas a `content/queue/`. La caption la escribe Claude; no se
+genera imagen con IA, se usa el material real que subas (fotos/videos de las
+webs que hace la agencia, capturas, reels, etc.).
 
 ## Como funciona
 
@@ -15,8 +15,7 @@ agencia, capturas, reels, etc.).
    corre lunes/miercoles/viernes a las 15:00 UTC (o manualmente desde la
    pestaña Actions > "Run workflow").
 3. Coge el siguiente archivo en cola (orden alfabetico), genera la caption
-   con la API de Claude, y publica en Instagram y Facebook via la Graph API
-   de Meta.
+   con la API de Claude, y publica en Instagram via la Graph API de Meta.
 4. Si todo va bien, mueve el archivo a `content/posted/` y registra el post
    en `content/posted.json`. Si falla, el archivo se queda en la cola para
    reintentarlo en la siguiente ejecucion.
@@ -26,14 +25,13 @@ agencia, capturas, reels, etc.).
 ### 1. Secrets del repo
 
 En GitHub: `Settings > Secrets and variables > Actions > New repository secret`.
-Añade estos 4:
+Añade estos 3:
 
 | Secret | De donde sale |
 |---|---|
 | `ANTHROPIC_API_KEY` | console.anthropic.com > API Keys |
 | `IG_USER_ID` | ID de tu cuenta de Instagram Business (Graph API Explorer: `GET /me/accounts` -> pagina -> `GET /{page-id}?fields=instagram_business_account`) |
-| `FB_PAGE_ID` | ID de la Facebook Page vinculada a esa cuenta de Instagram |
-| `FB_PAGE_ACCESS_TOKEN` | Token de pagina de larga duracion (60 dias) con permisos `instagram_content_publish`, `pages_manage_posts`, `pages_read_engagement`, `pages_show_list` |
+| `FB_PAGE_ACCESS_TOKEN` | Token de pagina de larga duracion (60 dias) con permiso `instagram_content_publish`. Instagram se gestiona a traves del token de la Facebook Page vinculada, aunque no publiquemos en Facebook. |
 
 **Importante:** el `FB_PAGE_ACCESS_TOKEN` de larga duracion caduca cada ~60
 dias. Toca renovarlo a mano en
@@ -63,7 +61,7 @@ entorno) pero no se llama a la Graph API ni se mueve ningun archivo.
 
 ## Probar manualmente en GitHub
 
-Pestaña **Actions** > "Publicar en Instagram y Facebook (agencia web)" >
+Pestaña **Actions** > "Publicar en Instagram (agencia web)" >
 **Run workflow**. Puedes marcar la opcion `dry_run` para simular sin
 publicar.
 
@@ -76,3 +74,5 @@ publicar.
   subiendo material.
 - No hay reintentos automaticos de token expirado: si el token caduca, el
   job fallara y GitHub te avisara por email/notificacion.
+- Facebook no esta conectado por ahora (queda pendiente para cuando se
+  resuelva la verificacion de la cuenta de desarrollador de Meta).

@@ -1,14 +1,12 @@
 """
 Orchestrator: picks the next unpublished file from content/queue/, generates a
-caption with Claude, publishes it to Instagram and Facebook, then moves the
-file to content/posted/ and logs the result.
+caption with Claude, publishes it to Instagram, then moves the file to
+content/posted/ and logs the result.
 
 Env vars required (set as GitHub Actions secrets):
   ANTHROPIC_API_KEY      - Claude API key (falls back to a generic caption if missing)
   IG_USER_ID             - Instagram Business Account ID
-  FB_PAGE_ID             - Facebook Page ID
-  FB_PAGE_ACCESS_TOKEN   - Page access token with instagram_content_publish,
-                            pages_manage_posts, pages_read_engagement
+  FB_PAGE_ACCESS_TOKEN   - Page access token with instagram_content_publish
   GITHUB_REPOSITORY      - auto-set by GitHub Actions ("owner/repo")
   BUSINESS_NICHE         - optional, overrides the default niche description
   DRY_RUN                - "true" to skip real publishing (prints instead)
@@ -85,14 +83,10 @@ def main() -> int:
 
     media_url = build_raw_url(filename)
     ig_user_id = os.environ["IG_USER_ID"]
-    fb_page_id = os.environ["FB_PAGE_ID"]
     access_token = os.environ["FB_PAGE_ACCESS_TOKEN"]
 
     ig_post_id = graph_api.publish_instagram(ig_user_id, access_token, media_url, text, video)
     print(f"Publicado en Instagram: {ig_post_id}")
-
-    fb_post_id = graph_api.publish_facebook(fb_page_id, access_token, media_url, text, video)
-    print(f"Publicado en Facebook: {fb_post_id}")
 
     POSTED_DIR.mkdir(parents=True, exist_ok=True)
     media_path.rename(POSTED_DIR / filename)
@@ -105,7 +99,6 @@ def main() -> int:
         "file": filename,
         "caption": text,
         "instagram_post_id": ig_post_id,
-        "facebook_post_id": fb_post_id,
         "published_at": datetime.now(timezone.utc).isoformat(),
     })
     save_log(log)

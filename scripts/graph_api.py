@@ -1,4 +1,4 @@
-"""Thin wrapper around the Meta Graph API for publishing to Instagram + Facebook."""
+"""Thin wrapper around the Meta Graph API for publishing to Instagram."""
 import json
 import time
 import urllib.parse
@@ -59,19 +59,3 @@ def publish_instagram(ig_user_id: str, access_token: str, media_url: str, captio
         "access_token": access_token,
     })
     return published["id"]
-
-
-def publish_facebook(page_id: str, access_token: str, media_url: str, caption: str, video: bool) -> str:
-    if video:
-        result = _post(f"{page_id}/videos", {
-            "file_url": media_url,
-            "description": caption,
-            "access_token": access_token,
-        })
-    else:
-        result = _post(f"{page_id}/photos", {
-            "url": media_url,
-            "caption": caption,
-            "access_token": access_token,
-        })
-    return result["id"]
